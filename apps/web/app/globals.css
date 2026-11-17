@@ -1,0 +1,43 @@
+:root {
+  color-scheme: light;
+  background: #f4f1ea;
+  color: #1c1915;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Georgia, "Iowan Old Style", Palatino, serif;
+}
+
+main {
+  max-width: 38rem;
+  margin: 14vh auto;
+  padding: 0 1.5rem;
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0.4rem 0 1rem;
+  font-size: 3.25rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.lead {
+  font-size: 1.35rem;
+}
+
+p {
+  line-height: 1.5;
+}
