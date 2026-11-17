@@ -1,0 +1,41 @@
+{
+  "name": "@askdocs/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "prebuild": "pnpm --filter @askdocs/shared run build",
+    "build": "nest build",
+    "dev": "nest start --watch",
+    "start": "node dist/main.js",
+    "lint": "eslint src",
+    "pretest": "pnpm --filter @askdocs/shared run build",
+    "test": "jest --colors"
+  },
+  "dependencies": {
+    "@askdocs/shared": "workspace:*",
+    "@anthropic-ai/sdk": "^1.9.0",
+    "@google/genai": "^3.4.0",
+    "@nestjs/common": "^12.5.1",
+    "@nestjs/config": "^12.1.1",
+    "@nestjs/core": "^12.5.1",
+    "@nestjs/platform-express": "^12.5.1",
+    "groq-sdk": "^1.6.0",
+    "openai": "^7.57.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^12.0.13",
+    "@nestjs/schematics": "^12.0.13",
+    "@nestjs/testing": "^12.5.1",
+    "@types/express": "^5.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.19.0",
+    "eslint": "^10.15.0",
+    "jest": "^30.5.2",
+    "ts-jest": "^29.4.15",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.73.0"
+  }
+}
