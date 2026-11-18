@@ -17,6 +17,8 @@ function configFor(provider: ProviderName, overrides: Partial<LLMConfig> = {}): 
     model: "test-model",
     timeoutMs: 1_000,
     maxRetries: 1,
+    contextWindow: 8_192,
+    maxOutput: 2_048,
     openaiApiKey: "test-openai",
     anthropicApiKey: "test-anthropic",
     googleApiKey: "test-google",
@@ -52,6 +54,8 @@ describe("readLLMConfig", () => {
     expect(config.model).toBe("llama3.2");
     expect(config.timeoutMs).toBe(30_000);
     expect(config.maxRetries).toBe(2);
+    expect(config.contextWindow).toBe(8_192);
+    expect(config.maxOutput).toBe(2_048);
     expect(config.ollamaBaseUrl).toBe("http://localhost:11434");
   });
 
@@ -70,6 +74,38 @@ describe("readLLMConfig", () => {
     expect(() => readLLMConfig({ LLM_PROVIDER: "azure" })).toThrow(/LLM_PROVIDER/);
     expect(() => readLLMConfig({ LLM_TIMEOUT_MS: "0" })).toThrow(/LLM_TIMEOUT_MS/);
     expect(() => readLLMConfig({ LLM_MAX_RETRIES: "1.5" })).toThrow(/LLM_MAX_RETRIES/);
+    expect(() => readLLMConfig({ LLM_CONTEXT_WINDOW: "8.5" })).toThrow(/LLM_CONTEXT_WINDOW/);
+    expect(() => readLLMConfig({ LLM_MAX_OUTPUT_TOKENS: "0" })).toThrow(/LLM_MAX_OUTPUT_TOKENS/);
+  });
+
+  it.each([
+    ["openai", 128_000, 4_096],
+    ["anthropic", 200_000, 8_192],
+    ["gemini", 1_048_576, 8_192],
+    ["groq", 131_072, 4_096],
+    ["ollama", 8_192, 2_048],
+  ] as const)(
+    "defaults the %s context window to %i and the reply budget to %i",
+    (provider, contextWindow, maxOutput) => {
+      const config = readLLMConfig({ LLM_PROVIDER: provider });
+      expect(config.contextWindow).toBe(contextWindow);
+      expect(config.maxOutput).toBe(maxOutput);
+    },
+  );
+
+  it("lets the environment override the token budget", () => {
+    const config = readLLMConfig({
+      LLM_CONTEXT_WINDOW: "16000",
+      LLM_MAX_OUTPUT_TOKENS: "1024",
+    });
+    expect(config.contextWindow).toBe(16_000);
+    expect(config.maxOutput).toBe(1_024);
+  });
+
+  it("rejects a reply budget larger than the context window", () => {
+    expect(() => readLLMConfig({ LLM_CONTEXT_WINDOW: "100", LLM_MAX_OUTPUT_TOKENS: "200" })).toThrow(
+      /LLM_MAX_OUTPUT_TOKENS/,
+    );
   });
 });
 

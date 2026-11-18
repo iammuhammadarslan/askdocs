@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "prebuild": "pnpm --filter @askdocs/shared run build",
-    "build": "nest build",
-    "dev": "nest start --watch",
-    "start": "node dist/main.js",
+    "build": "node init && nest build",
+    "dev": "node init && nest start --watch",
+    "start": "node init && node dist/main.js",
     "lint": "eslint src",
     "pretest": "pnpm --filter @askdocs/shared run build",
     "test": "jest --colors"
