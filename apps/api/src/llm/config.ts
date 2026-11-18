@@ -10,11 +10,33 @@ export const DEFAULT_MODELS: Record<ProviderName, string> = {
   ollama: "llama3.2",
 };
 
+/** Used when LLM_CONTEXT_WINDOW is unset. Ollama's runtime window is often smaller than the model card. */
+export const DEFAULT_CONTEXT_WINDOWS: Record<ProviderName, number> = {
+  openai: 128_000,
+  anthropic: 200_000,
+  gemini: 1_048_576,
+  groq: 131_072,
+  ollama: 8_192,
+};
+
+/** Reserved for the reply when the request does not set maxTokens. */
+export const DEFAULT_MAX_OUTPUT_TOKENS: Record<ProviderName, number> = {
+  openai: 4_096,
+  anthropic: 8_192,
+  gemini: 8_192,
+  groq: 4_096,
+  ollama: 2_048,
+};
+
+export const LLM_CONFIG = Symbol("LLM_CONFIG");
+
 export interface LLMConfig {
   provider: ProviderName;
   model: string;
   timeoutMs: number;
   maxRetries: number;
+  contextWindow: number;
+  maxOutput: number;
   openaiApiKey?: string;
   anthropicApiKey?: string;
   googleApiKey?: string;
@@ -39,11 +61,31 @@ export function readLLMConfig(env: NodeJS.ProcessEnv): LLMConfig {
     throw new Error("LLM_MODEL must not be empty.");
   }
 
+  const contextWindow = readNumber(
+    env.LLM_CONTEXT_WINDOW,
+    DEFAULT_CONTEXT_WINDOWS[rawProvider],
+    "LLM_CONTEXT_WINDOW",
+    { min: 1, integer: true },
+  );
+  const maxOutput = readNumber(
+    env.LLM_MAX_OUTPUT_TOKENS,
+    DEFAULT_MAX_OUTPUT_TOKENS[rawProvider],
+    "LLM_MAX_OUTPUT_TOKENS",
+    { min: 1, integer: true },
+  );
+  if (maxOutput > contextWindow) {
+    throw new Error(
+      `LLM_MAX_OUTPUT_TOKENS (${maxOutput}) must be less than or equal to the context window (${contextWindow}).`,
+    );
+  }
+
   return {
     provider: rawProvider,
     model,
     timeoutMs: readNumber(env.LLM_TIMEOUT_MS, 30_000, "LLM_TIMEOUT_MS", { min: 1 }),
     maxRetries: readNumber(env.LLM_MAX_RETRIES, 2, "LLM_MAX_RETRIES", { min: 0, integer: true }),
+    contextWindow,
+    maxOutput,
     openaiApiKey: blankToUndefined(env.OPENAI_API_KEY),
     anthropicApiKey: blankToUndefined(env.ANTHROPIC_API_KEY),
     googleApiKey: blankToUndefined(env.GOOGLE_API_KEY),

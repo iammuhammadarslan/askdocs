@@ -14,7 +14,7 @@ This repository is the public follow-along for the 30-day LinkedIn series **Buil
 - pnpm workspaces
 - Docker
 
-Day 1 is the monorepo and a single LLM call. The database, the queue, retrieval, and the web chat arrive on later days. The web app is a placeholder until then.
+Day 1 is the monorepo and a single LLM call. Day 2 estimates the prompt at about four characters per token and drops the oldest history until that prompt and the reserved reply fit the context window. The database, the queue, retrieval, and the web chat arrive on later days. The web app is a placeholder until then.
 
 ## Quick start
 
@@ -55,8 +55,8 @@ The placeholder page runs at [http://localhost:3000](http://localhost:3000).
 
 | Path | What it is |
 | --- | --- |
-| `apps/api/src/llm` | `LLMProvider`, five adapters, the env factory, and the retry/timeout/log wrapper |
-| `apps/api/src/chat` | `POST /chat` |
+| `apps/api/src/llm` | `LLMProvider`, five adapters, the env factory, the retry/timeout/log wrapper, and the token budget |
+| `apps/api/src/chat` | `POST /chat`, after the token budget |
 | `apps/web` | Next.js placeholder |
 | `packages/shared` | Message and reply schemas |
 | `docs/days` | Lesson notes |
@@ -66,7 +66,7 @@ The placeholder page runs at [http://localhost:3000](http://localhost:3000).
 | Day | Topic | Notes | LinkedIn |
 | --- | --- | --- | --- |
 | 1 | An LLM call is just a stateless HTTP request | [Day 1](docs/days/day-01.md) | TODO |
-| 2 | Coming soon | | |
+| 2 | Tokens are your bill and your limit | [Day 2](docs/days/day-02.md) | TODO |
 | 3 | Coming soon | | |
 | 4 | Coming soon | | |
 | 5 | Coming soon | | |
