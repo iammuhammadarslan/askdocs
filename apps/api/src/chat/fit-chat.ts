@@ -3,7 +3,9 @@ import { fitToBudget, TokenBudgetError } from "../llm/token-budget";
 
 /**
  * Split a chat transcript into system text and history, then drop the oldest
- * history until it fits. Documents default to empty until retrieval exists.
+ * history until it fits. `docs` is counted and kept out of the trim. The
+ * prompt builder attaches that text; this function does not write it into
+ * the system message.
  */
 export function fitChatMessages(
   messages: readonly ChatMessage[],
