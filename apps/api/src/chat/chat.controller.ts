@@ -4,7 +4,7 @@ import { ZodError } from "zod";
 import { LLM_CONFIG, type LLMConfig } from "../llm/config";
 import { LLM_PROVIDER, type LLMProvider } from "../llm/llm-provider";
 import { TokenBudgetError } from "../llm/token-budget";
-import { fitChatMessages } from "./fit-chat";
+import { buildBudgetedPrompt, PromptError } from "./build-prompt";
 
 @Controller("chat")
 export class ChatController {
@@ -18,7 +18,7 @@ export class ChatController {
   async chat(@Body() body: unknown): Promise<Reply> {
     const parsed = parseChatRequest(body);
     const maxOutput = parsed.options?.maxTokens ?? this.config.maxOutput;
-    const messages = fitOrBadRequest(parsed.messages, {
+    const messages = promptOrBadRequest(parsed.messages, parsed.context, {
       contextWindow: this.config.contextWindow,
       maxOutput,
     });
@@ -26,14 +26,15 @@ export class ChatController {
   }
 }
 
-function fitOrBadRequest(
+function promptOrBadRequest(
   messages: ChatMessage[],
+  context: string | undefined,
   budget: { contextWindow: number; maxOutput: number },
 ): ChatMessage[] {
   try {
-    return fitChatMessages(messages, budget);
+    return buildBudgetedPrompt(messages, context, budget);
   } catch (error) {
-    if (error instanceof TokenBudgetError) {
+    if (error instanceof TokenBudgetError || error instanceof PromptError) {
       throw new BadRequestException(error.message);
     }
     throw error;

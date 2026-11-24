@@ -14,7 +14,7 @@ This repository is the public follow-along for the 30-day LinkedIn series **Buil
 - pnpm workspaces
 - Docker
 
-Day 1 is the monorepo and a single LLM call. Day 2 estimates the prompt at about four characters per token and drops the oldest history until that prompt and the reserved reply fit the context window. The database, the queue, retrieval, and the web chat arrive on later days. The web app is a placeholder until then.
+Day 1 is the monorepo and a single LLM call. Day 2 estimates the prompt at about four characters per token and drops the oldest history until that prompt and the reserved reply fit the context window. Day 3 keeps a fixed rule set in the system message and puts document text in `<context>` on the latest user message. The database, the queue, retrieval, and the web chat arrive on later days. The web app is a placeholder until then.
 
 ## Quick start
 
@@ -35,7 +35,7 @@ docker compose exec ollama ollama pull llama3.2
 
 curl -s http://localhost:3001/chat \
   -H 'content-type: application/json' \
-  -d '{"messages":[{"role":"user","content":"Say hello in one sentence."}]}'
+  -d '{"context":"AskDocs answers from the context on the request.","messages":[{"role":"user","content":"What does AskDocs answer from?"}]}'
 ```
 
 To use a cloud provider instead, set `LLM_PROVIDER` to `openai`, `anthropic`, `gemini`, or `groq`, set `LLM_MODEL` if you want, and fill in that provider's key in `.env`.
@@ -56,7 +56,7 @@ The placeholder page runs at [http://localhost:3000](http://localhost:3000).
 | Path | What it is |
 | --- | --- |
 | `apps/api/src/llm` | `LLMProvider`, five adapters, the env factory, the retry/timeout/log wrapper, and the token budget |
-| `apps/api/src/chat` | `POST /chat`, after the token budget |
+| `apps/api/src/chat` | `POST /chat`, the prompt builder, and the token budget |
 | `apps/web` | Next.js placeholder |
 | `packages/shared` | Message and reply schemas |
 | `docs/days` | Lesson notes |
@@ -67,7 +67,7 @@ The placeholder page runs at [http://localhost:3000](http://localhost:3000).
 | --- | --- | --- | --- |
 | 1 | An LLM call is just a stateless HTTP request | [Day 1](docs/days/day-01.md) | TODO |
 | 2 | Tokens are your bill and your limit | [Day 2](docs/days/day-02.md) | TODO |
-| 3 | Coming soon | | |
+| 3 | Keep instructions and data apart | [Day 3](docs/days/day-03.md) | TODO |
 | 4 | Coming soon | | |
 | 5 | Coming soon | | |
 | 6 | Coming soon | | |

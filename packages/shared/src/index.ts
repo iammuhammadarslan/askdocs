@@ -33,6 +33,7 @@ export type Reply = z.infer<typeof replySchema>;
 
 export const chatRequestSchema = z.object({
   messages: z.array(chatMessageSchema).min(1),
+  context: z.string().optional(),
   options: chatOptionsSchema.optional(),
 });
 export type ChatRequest = z.infer<typeof chatRequestSchema>;
